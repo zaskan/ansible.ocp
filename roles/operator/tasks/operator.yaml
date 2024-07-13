@@ -1,4 +1,4 @@
-- name: ({{ operator.name }}) - namespace
+- name: Create Namespace for {{ operator.name }}
   kubernetes.core.k8s:
     state: present
     definition:
@@ -7,7 +7,7 @@
       metadata:
         name: "{{ operator.namespace }}"
 
-- name: ({{ operator.name }}) - group
+- name: Create Operator Group for {{ operator.name }}
   kubernetes.core.k8s:
     state: present
     definition:
@@ -21,7 +21,7 @@
         - "{{ operator.namespace }}"
   when: operator.clusterwide is false
 
-- name: ({{ operator.name }}) - install subscription
+- name: Install Subscription for {{ operator.name }}
   kubernetes.core.k8s:
     state: present
     definition:
@@ -40,7 +40,7 @@
         installPlanApproval: Automatic
         clusterwide: "{{ operator.clusterwide }}"
 
-- name: ({{ operator.name }}) - get ClusterServiceVersion from Subscription
+- name: Get ClusterServiceVersion from Subscription for {{ operator.name }}
   kubernetes.core.k8s_info:
     api_version: operators.coreos.com/v1alpha1
     kind: Subscription
@@ -51,7 +51,7 @@
   retries: 30
   delay: 10
 
-- name: ({{ operator.name }}) - wait for the operator to be installed
+- name: Wait for {{ operator.name }}) to be installed
   kubernetes.core.k8s_info:
     api_version: operators.coreos.com/v1alpha1
     kind: ClusterServiceVersion
@@ -63,7 +63,7 @@
   delay: 10
   ignore_errors: true
 
-- name: ({{ operator.name }}) - Fail if the operator installation failed
+- name: Fail if the operator ({{ operator.name }}) installation failed
   fail:
     msg: "Failed to install {{ operator.name }} Operator"
   when: operator_info is failed
